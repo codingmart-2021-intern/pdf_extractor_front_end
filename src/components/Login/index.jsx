@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Input, Button } from 'antd';
+import {platformApi} from  '../../helpers/api';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import classes from "./login.module.css";
 import { Link, useHistory } from "react-router-dom";
@@ -12,7 +13,15 @@ const Index = () => {
 
     const onSubmit = (values) => {
         console.log('Received values of form: ', values);
-        history.push("/")
+
+        platformApi.post("/rest/api/v1/user/authenticate",values)
+        .then(result => {
+            console.log(result)
+        })
+        .catch(error => {
+            console.log(error.response.data);
+        })
+        // history.push("/")
     };
 
     return (
@@ -27,7 +36,7 @@ const Index = () => {
                 >
 
                     <Form.Item
-                        name="username"
+                        name="email"
                         rules={[{ required: true, message: 'Please Enter your Email!' }]}
                     >
                         <Input

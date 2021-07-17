@@ -1,4 +1,5 @@
 import React from 'react';
+import {platformApi} from  '../../helpers/api';
 import { Form, Input, Button, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import classes from "./signup.module.css";
@@ -11,7 +12,14 @@ const Index = () => {
 
     const onSubmit = (values) => {
         console.log('Received values of form: ', values);
-        history.push("/login")
+        platformApi.post("/rest/api/v1/user/signup",values)
+        .then(result => {
+            console.log(result)
+        })
+        .catch(error => {
+            console.log(error.response.data);
+        })
+        // history.push("/login")
     };
 
     return (
@@ -26,7 +34,7 @@ const Index = () => {
                 >
 
                     <Form.Item
-                        name="username"
+                        name="name"
                         rules={[{ required: true, message: 'Please Enter your name!' }]}
                     >
                         <Input
@@ -36,7 +44,7 @@ const Index = () => {
                     </Form.Item>
 
                     <Form.Item
-                        name="Email"
+                        name="email"
                         rules={[{ required: true, message: 'Please Enter your Email!' }]}
                     >
                         <Input
@@ -56,11 +64,11 @@ const Index = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item style={{ marginTop: "-1rem" }}>
+                    {/* <Form.Item style={{ marginTop: "-1rem" }}>
                         <Form.Item name="remember" valuePropName="checked" noStyle>
                             <Checkbox>Remember me</Checkbox>
                         </Form.Item>
-                    </Form.Item>
+                    </Form.Item> */}
 
                     <Form.Item style={{ marginTop: "-1rem" }}>
                         <Button type="primary" block htmlType="submit" >
