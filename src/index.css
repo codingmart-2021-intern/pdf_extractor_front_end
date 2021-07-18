@@ -1,0 +1,32 @@
+.linkylink {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #006a71 !important;
+    padding: 10px;
+  }
+  
+  .linkylink:hover {
+    color: #14747B !important;
+  }
+  .ant-table-thead > tr > th {
+  font-weight: 500;
+  background-color: #6c7b8a !important;
+  color:#ffffff
+
+}
+.ant-table-expanded-row {
+  background-color: #eceff1;
+  cursor: default;
+}
+.ant-table-expanded-row:hover {
+  background-color: #eceff1 !important;
+}
+.ant-table-thead > tr > th {
+  font-weight: 500;
+  background-color: #6c7b8a;
+  color:#ffffff
+}
+
+.ant-table-row:nth-child(2n){
+  background-color: #a8afb3;
+}

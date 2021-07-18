@@ -1,31 +1,57 @@
 import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { platformApi } from "../../helpers/api";
+import axios from "axios";
 import { Select, Affix, Form, Tooltip, Tabs, Slider, Button, Card } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import PDFviewer from "../../components/pdfviewer/pdfviewer";
+import { getAccessToken } from "../../utils/index";
 
 const Index = () => {
   const { Option } = Select;
   const { Meta } = Card;
+  const history = useHistory();
+  const { pdfid } = useParams();
   const { TabPane } = Tabs;
   const [options, setOptions] = useState();
   const [selected, setSelected] = useState([]);
   const [image, setImage] = useState([]);
+  const [url, setUrl] = useState();
+  const [pages, setPages] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+
+  const createPDF = (data) => {
+    console.log(data);
+    axios(`http://localhost:3002/rest/api/v1/pdf/download`, {
+      method: "POST",
+      responseType: "blob", //Force to receive data in a Blob Format
+      headers: {
+        Authorization: getAccessToken(),
+      },
+      data,
+    })
+      .then((response) => {
+        console.log(response);
+        const url = window.URL.createObjectURL(
+          new Blob([response.data], { type: "application/pdf" })
+        );
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "pdfextractor.pdf");
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const downloadSelected = () => {
     // /pdf/download
-
-    platformApi
-      .post("/pdf/download", {
-        pdfId: 1,
-        pageNos: [0, 1],
-      })
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
+    createPDF({
+      pdfId: pdfid,
+      pageNos: selected,
+    });
   };
 
   const removeSelected = (id) => {
@@ -42,7 +68,30 @@ const Index = () => {
 
   const onSubmit = (values) => {
     console.log("Received values of form: ", values);
+    let selectedPages = [];
+    for(let i = values.slider[0]; i <= values.slider[1] ; i++ ){
+      selectedPages.push(i-1);
+    }
+    createPDF({
+      pdfId: pdfid,
+      pageNos: selectedPages,
+    });
   };
+
+  useEffect(() => {
+    platformApi
+      .get(`/pdf/${pdfid}`)
+      .then((response) => {
+        setUrl(response.data.url);
+        setPages(response.data.pages.length);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log(error);
+        history.push("/");
+      });
+  }, []);
 
   useEffect(() => {
     let tempSelected = [];
@@ -74,7 +123,9 @@ const Index = () => {
       })
     );
   }, [selected, image]);
-  return (
+  return isLoading ? (
+    <h1>Loading...</h1>
+  ) : (
     <>
       <div
         style={{
@@ -134,7 +185,7 @@ const Index = () => {
                 onFinish={onSubmit}
               >
                 <Form.Item name="slider" label="Range">
-                  <Slider range style={{ width: "70%" }} />
+                  <Slider range min={1} max={pages} style={{ width: "70%" }} />
                 </Form.Item>
 
                 <Form.Item>

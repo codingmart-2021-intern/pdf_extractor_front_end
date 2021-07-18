@@ -1,0 +1,19 @@
+.upload_but,
+.upload_but:active{
+    width:15rem;
+    height:3rem;
+    background:#B9345A;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.upload_but:hover{
+    background:#94032cf3;
+    color: #fff;
+}
+
+.upload{
+    float: right;
+    padding: 1rem;
+}

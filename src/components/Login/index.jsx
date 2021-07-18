@@ -1,9 +1,10 @@
 import React from 'react';
-import { Form, Input, Button } from 'antd';
-import {platformApi} from  '../../helpers/api';
+import { Form, Input, Button, message } from 'antd';
+import { platformApi } from '../../helpers/api';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import classes from "./login.module.css";
 import { Link, useHistory } from "react-router-dom";
+import { setAccessToken, setUserId } from '../../utils';
 
 
 
@@ -14,14 +15,20 @@ const Index = () => {
     const onSubmit = (values) => {
         console.log('Received values of form: ', values);
 
-        platformApi.post("/user/authenticate",values)
-        .then(result => {
-            console.log(result)
-        })
-        .catch(error => {
-            console.log(error.response.data);
-        })
-        // history.push("/")
+        platformApi.post("/user/authenticate", values)
+            .then(result => {
+                let { data } = result;
+                console.log(data);
+                setAccessToken(data.token)
+                setUserId(data.id)
+                history.push("/")
+                message.success("Login success",2)
+            })
+            .catch(error => {
+                console.log(error.response.data,3);
+                message.error(error.response.data.message)
+            })
+
     };
 
     return (

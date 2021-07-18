@@ -1,6 +1,6 @@
 import React from 'react';
-import {platformApi} from  '../../helpers/api';
-import { Form, Input, Button, Checkbox } from 'antd';
+import { platformApi } from '../../helpers/api';
+import { Form, Input, Button, Checkbox, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import classes from "./signup.module.css";
 import { Link, useHistory } from "react-router-dom";
@@ -12,14 +12,16 @@ const Index = () => {
 
     const onSubmit = (values) => {
         console.log('Received values of form: ', values);
-        platformApi.post("/user/signup",values)
-        .then(result => {
-            console.log(result)
-        })
-        .catch(error => {
-            console.log(error.response.data);
-        })
-        // history.push("/login")
+        platformApi.post("/user/signup", values)
+            .then(result => {
+                console.log(result)
+                message.success("signup successfull",2)
+                history.push("/login")
+            })
+            .catch(error => {
+                console.log(error.response.data);
+                message.error(error.response.data.message,2)
+            })
     };
 
     return (
