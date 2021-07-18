@@ -14,7 +14,7 @@ const Index = () => {
     const onSubmit = (values) => {
         console.log('Received values of form: ', values);
 
-        platformApi.post("/rest/api/v1/user/authenticate",values)
+        platformApi.post("/user/authenticate",values)
         .then(result => {
             console.log(result)
         })

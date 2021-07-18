@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAccessToken } from "../utils"
 
 const baseUrl =
-  process.env.NODE_ENV === "development" ? "http://localhost:3002/" : "/";
+  process.env.NODE_ENV === "development" ? "http://localhost:3002/rest/api/v1/" : "/";
 
 
 

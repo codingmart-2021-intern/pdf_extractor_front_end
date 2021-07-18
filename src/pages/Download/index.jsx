@@ -1,46 +1,98 @@
 import React, { useEffect, useState } from "react";
-import { Select, Affix, Form, Tabs, Slider, Button } from "antd";
+import { platformApi } from "../../helpers/api";
+import { Select, Affix, Form, Tooltip, Tabs, Slider, Button, Card } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import PDFviewer from "../../components/pdfviewer/pdfviewer";
 
 const Index = () => {
   const { Option } = Select;
+  const { Meta } = Card;
   const { TabPane } = Tabs;
-  const children = [];
+  const [options, setOptions] = useState();
   const [selected, setSelected] = useState([]);
   const [image, setImage] = useState([]);
 
-  function callback(key) {
-    console.log(key);
-  }
+  const downloadSelected = () => {
+    // /pdf/download
 
-  for (let i = 10; i < 36; i++) {
-    children.push(
-      <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
-    );
-  }
+    platformApi
+      .post("/pdf/download", {
+        pdfId: 1,
+        pageNos: [0, 1],
+      })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  };
 
-  function handleChange(value) {
-    console.log(`selected ${value}`);
-  }
+  const removeSelected = (id) => {
+    let tempImage = [...image];
+    tempImage.splice(id, 1);
+
+    setImage([...tempImage]);
+
+    let tempSelected = [...selected];
+    tempSelected.splice(id, 1);
+
+    setSelected([...tempSelected]);
+  };
+
   const onSubmit = (values) => {
     console.log("Received values of form: ", values);
   };
 
   useEffect(() => {
-    console.log(selected, image);
-  }, [selected]);
+    let tempSelected = [];
+
+    setOptions(
+      image.map((ele, i) => {
+        if (!tempSelected.includes(ele)) {
+          tempSelected.push(ele);
+          return (
+            <td>
+              <Tooltip title={`Click image to delete`} color="red" key="red">
+                <Card
+                  onClick={() => removeSelected(i)}
+                  title={`Page ${selected[i]}`}
+                  hoverable
+                  bordered={false}
+                >
+                  <img
+                    alt={`Page ${selected[i]}`}
+                    src={ele}
+                    width="100px"
+                    height="170px"
+                  />
+                </Card>
+              </Tooltip>
+            </td>
+          );
+        }
+      })
+    );
+  }, [selected, image]);
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <PDFviewer
           selected={selected}
           setSelected={setSelected}
           image={image}
           setImage={setImage}
         />
-        <Affix offsetTop={170} style={{ width: "50%", padding: "50px" }}>
-          <Tabs defaultActiveKey="1" onChange={callback}>
+        <Affix
+          offsetTop={170}
+          style={{ width: "50%", padding: "50px", marginRight: "40px" }}
+        >
+          <Tabs defaultActiveKey="1">
             <TabPane tab="Sorted PDF" key="1">
               <Button
                 type="primary"
@@ -51,30 +103,38 @@ const Index = () => {
                 Download
               </Button>
             </TabPane>
-            <TabPane tab="Range PDF" key="2">
+            <TabPane
+              style={{
+                overflowX: "scroll",
+              }}
+              tab="Select PDF"
+              key="2"
+            >
+              <Button
+                type="primary"
+                shape="round"
+                icon={<DownloadOutlined />}
+                size="large"
+                style={{ position: "absolute" }}
+                onClick={downloadSelected}
+              >
+                Download
+              </Button>
+              <table style={{ marginTop: "60px" }}>
+                <thead>
+                  <tr>{options}</tr>
+                </thead>
+              </table>
+            </TabPane>
+            <TabPane tab="Range PDF" key="3">
               <Form
                 name="normal_login"
                 className="login-form"
                 initialValues={{ remember: false }}
                 onFinish={onSubmit}
               >
-                <Form.Item name="pages" label="Select Pages">
-                  <Select
-                    mode="multiple"
-                    allowClear
-                    style={{ width: "100%" }}
-                    placeholder="Please select"
-                    value={selected}
-                    onChange={handleChange}
-                  >
-                    {selected.map(ele => {
-                        return <Option key={ele}>{ele}</Option>
-                    })}
-                    
-                  </Select>
-                </Form.Item>
                 <Form.Item name="slider" label="Range">
-                  <Slider range />
+                  <Slider range style={{ width: "70%" }} />
                 </Form.Item>
 
                 <Form.Item>
@@ -90,7 +150,7 @@ const Index = () => {
                 </Form.Item>
               </Form>
             </TabPane>
-            <TabPane tab="Category PDF" key="3">
+            <TabPane tab="Category PDF" key="4">
               Content of Tab Pane 3
             </TabPane>
           </Tabs>
