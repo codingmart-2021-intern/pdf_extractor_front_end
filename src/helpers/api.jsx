@@ -14,18 +14,18 @@ const platformApi = axios.create({
 });
 
 
-// platformApi.interceptors.request.use(config => {
-//   const token = getAccessToken();
-//   if (token) {
-//     config.headers["Authorization"] = token;
-//   }
-//   return config;
-// });
+platformApi.interceptors.request.use(config => {
+  const token = getAccessToken();
+  if (token) {
+    config.headers["Authorization"] = token;
+  }
+  return config;
+});
 
-// platformApi.interceptors.response.use(
-//   config => config,
-//   error => {
-//     throw error
-//   }
-// );
+platformApi.interceptors.response.use(
+  config => config,
+  error => {
+    throw error
+  }
+);
 export { platformApi, baseUrl };
