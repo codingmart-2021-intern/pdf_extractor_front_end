@@ -15,21 +15,24 @@ const Home = () => {
     const [data, setData] = useState([])
     const history = useHistory();
 
+    console.log(uploaded);
+
     useEffect(() => {
-        if (uploaded && url && filename) {
+        if (uploaded) {
+            console.log("FILENAME  "+filename);
             setSpinning(true)
             const userId = getUserId();
             platformApi.post(`/rest/api/v1/pdf/save/pdfFile/${userId}`,
                 { fileName: filename, url: url }).then(result => {
                     setTableData()
-                    setFilename(null)
-                    setUrl(null)
+                    // setFilename(null)
+                    // setUrl(null)
                 }).catch(err => {
                     setSpinning(true)
                     message.error("something went wrong", 3)
                 })
         }
-    }, [uploaded, url])
+    }, [uploaded])
 
 
     useEffect(() => {

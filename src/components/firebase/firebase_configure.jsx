@@ -20,38 +20,33 @@ class Firebase extends Component {
 
 
     handleUpload = (e) => {
-        console.log(e.file);
-        if (e.file.status === 'uploading') {
-            return;
-          }
-        if (e.file.status === 'done') {
-            this.props.setSpinning(true)
-            this.setState({ file: [e.file.originFileObj] })
-            console.log(e.file.originFileObj);
-            const uploadTask = storage.ref(`file/${e.file.originFileObj.name}`).put(e.file.originFileObj);
-            uploadTask.on(
-                "state_changed",
-                snapshot => { },
-                error => {
-                    console.log(error)
-                    this.props.setUploaded(false)
-                },
-                () => {
-                    storage
-                        .ref("file")
-                        .child(e.file.originFileObj.name)
-                        .getDownloadURL()
-                        .then(url => {
-                            console.log(url);
-                            // this.props.onChange(url)
-                            // Notification.show({ status: true, message: "Please save the changes" })
-                            this.props.setUrl(url)
-                            this.props.setUploaded(true)
-                            this.props.setFilename(e.file.originFileObj.name)
-                        })
-                }
-            )
-        }
+        console.log(e.file.originFileObj.name);
+        this.props.setSpinning(true)
+        this.setState({ file: [e.file.originFileObj] })
+        console.log(e.file.originFileObj);
+        const uploadTask = storage.ref(`file/${e.file.originFileObj.name}`).put(e.file.originFileObj);
+        uploadTask.on(
+            "state_changed",
+            snapshot => { },
+            error => {
+                console.log(error)
+                this.props.setUploaded(false)
+            },
+            () => {
+                storage
+                    .ref("file")
+                    .child(e.file.originFileObj.name)
+                    .getDownloadURL()
+                    .then(url => {
+                        console.log(url);
+                        // this.props.onChange(url)
+                        // Notification.show({ status: true, message: "Please save the changes" })
+                        this.props.setUrl(url)
+                        this.props.setUploaded(true)
+                        this.props.setFilename(e.file.originFileObj.name)
+                    })
+            }
+        )
     }
 
     render() {
@@ -61,16 +56,16 @@ class Firebase extends Component {
                     onChange={this.handleUpload}
                     multiple={false}
                     fileList={this.state.file}
-                    beforeUpload={this.beforeUpload}
-                    action={"http://test.autocloud.in//api/upload/mocky"}
+                    // beforeUpload={this.beforeUpload}
+                    // action={"http://test.autocloud.in//api/upload/mocky"}
                     showUploadList={false}
-                    onRemove={() => this.setState({ file: [] })}
+                // onRemove={() => this.setState({ file: [] })}
                 >
-                    <button 
+                    <button
                         className={classes.upload_but}
-                        icon={<UploadOutlined />}
+                    // icon={<UploadOutlined />}
                     >
-                        Click to Upload</button>
+                        <UploadOutlined style={{ marginRight: "20px" }} />   Click to Upload</button>
                 </Upload>
             </div>
         )
