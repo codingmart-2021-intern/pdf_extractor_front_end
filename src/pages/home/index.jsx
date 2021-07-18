@@ -14,25 +14,23 @@ const Home = () => {
     const [spinning, setSpinning] = useState(false);
     const [data, setData] = useState([])
     const history = useHistory();
-
+    const [count, setCount] = useState(0)
     console.log(uploaded);
 
-    useEffect(() => {
-        if (uploaded) {
-            console.log("FILENAME  "+filename);
-            setSpinning(true)
-            const userId = getUserId();
-            platformApi.post(`/rest/api/v1/pdf/save/pdfFile/${userId}`,
-                { fileName: filename, url: url }).then(result => {
-                    setTableData()
-                    // setFilename(null)
-                    // setUrl(null)
-                }).catch(err => {
-                    setSpinning(true)
-                    message.error("something went wrong", 3)
-                })
-        }
-    }, [uploaded])
+    const upload = () => {
+
+        console.log("FILENAME  " + filename);
+        setSpinning(true)
+        const userId = getUserId();
+        platformApi.post(`/rest/api/v1/pdf/save/pdfFile/${userId}`,
+            { fileName: filename, url: url }).then(result => {
+                setTableData()
+            }).catch(err => {
+                setSpinning(true)
+                message.error("something went wrong", 3)
+            })
+
+    }
 
 
     useEffect(() => {
@@ -71,6 +69,7 @@ const Home = () => {
                 setUploaded={setUploaded}
                 setFilename={setFilename}
                 setSpinning={setSpinning}
+                upload={upload}
             />
 
             <DashboardTable
