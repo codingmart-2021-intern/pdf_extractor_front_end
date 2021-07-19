@@ -24,6 +24,9 @@ const Pdfviewer = (sets: any) => {
       setEnable(true);
       sets.setSelected([...sets.selected,page]);
       sets.setImage([...sets.image,props.target.currentSrc]);
+
+      sets.setSelected2([...sets.selected,page]);
+      sets.setImage2([...sets.image,props.target.currentSrc]);
     }
   }
 
@@ -33,6 +36,7 @@ const Pdfviewer = (sets: any) => {
       let tempSelected = [...sets.selected];
       tempSelected[tempSelected.length - 1] = page;
       sets.setSelected([...tempSelected]);
+      sets.setSelected2([...tempSelected]);
       setEnable(false);
     }
   },[page,enable]);
