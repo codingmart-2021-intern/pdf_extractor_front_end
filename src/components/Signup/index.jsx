@@ -19,8 +19,11 @@ const Index = () => {
                 history.push("/login")
             })
             .catch(error => {
-                console.log(error.response.data);
-                message.error(error.response.data.message,2)
+                message.error(
+                  !error.response
+                    ? error.message
+                    : error.response.data.message
+                ,2);
             })
     };
 

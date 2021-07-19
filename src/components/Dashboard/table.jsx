@@ -33,7 +33,7 @@ const DashboardTable = (props) => {
                 return (
                     <>
                         <span
-                        onClick={()=>props.history.push("/download")}
+                        onClick={()=>props.history.push(`/download/${data.pdf_id}`)}
                             className="linkylink"
                         >
                             View

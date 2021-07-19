@@ -28,7 +28,7 @@ const Pdfviewer = (sets: any) => {
   }
 
   useEffect(() => {
-    
+    console.log(sets)
     if( enable === true && page !== sets.selected[sets.selected.length - 1] ){
       let tempSelected = [...sets.selected];
       tempSelected[tempSelected.length - 1] = page;
@@ -111,7 +111,7 @@ const Pdfviewer = (sets: any) => {
           <div style={{width: "700px", padding: "10px 50px", margin: "0"}} onClick={onThumnailClick}>
             <Viewer
               
-              fileUrl="https://file-examples-com.github.io/uploads/2017/10/file-example_PDF_1MB.pdf"
+              fileUrl={sets.url}
               plugins={[defaultLayoutPluginInstance]}
               onPageChange={pageChange}
               

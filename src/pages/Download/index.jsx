@@ -2,10 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { platformApi } from "../../helpers/api";
 import axios from "axios";
-import { Select, Affix, Form, Tooltip, Tabs, Slider, Button, Card } from "antd";
+import {
+  Select,
+  Affix,
+  Form,
+  Tooltip,
+  Tabs,
+  Slider,
+  Button,
+  Card,
+  message,
+} from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import PDFviewer from "../../components/pdfviewer/pdfviewer";
 import { getAccessToken } from "../../utils/index";
+import Header from "../../components/header/header";
 
 const Index = () => {
   const { Option } = Select;
@@ -42,7 +53,9 @@ const Index = () => {
         link.click();
       })
       .catch((error) => {
-        console.log(error);
+        message.error(
+          !error.response ? error.message : error.response.data.message
+        );
       });
   };
 
@@ -69,8 +82,8 @@ const Index = () => {
   const onSubmit = (values) => {
     console.log("Received values of form: ", values);
     let selectedPages = [];
-    for(let i = values.slider[0]; i <= values.slider[1] ; i++ ){
-      selectedPages.push(i-1);
+    for (let i = values.slider[0]; i <= values.slider[1]; i++) {
+      selectedPages.push(i - 1);
     }
     createPDF({
       pdfId: pdfid,
@@ -85,10 +98,17 @@ const Index = () => {
         setUrl(response.data.url);
         setPages(response.data.pages.length);
         setIsLoading(false);
+
+        platformApi
+          .get(response.data.url)
+          .then((response) => console.log(response))
+          .catch((error) => console.log(error));
       })
       .catch((error) => {
         setIsLoading(false);
-        console.log(error);
+        message.error(
+          !error.response ? error.message : error.response.data.message
+        );
         history.push("/");
       });
   }, []);
@@ -127,6 +147,7 @@ const Index = () => {
     <h1>Loading...</h1>
   ) : (
     <>
+      <Header page="Download" />
       <div
         style={{
           display: "flex",
@@ -138,6 +159,7 @@ const Index = () => {
           setSelected={setSelected}
           image={image}
           setImage={setImage}
+          url={url}
         />
         <Affix
           offsetTop={170}
