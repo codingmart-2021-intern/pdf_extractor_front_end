@@ -35,9 +35,16 @@ const Index = () => {
   const [url, setUrl] = useState();
   const [pages, setPages] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [load, setLoad] = useState(false)
+  const [load2, setLoad2] = useState(false)
+  const [load3, setLoad3] = useState(false)
+  const [load4, setLoad4] = useState(false)
+
 
   const createPDF = (data) => {
     console.log(data);
+    setLoad(true)
+
     axios(`http://localhost:3002/rest/api/v1/pdf/download`, {
       method: "POST",
       responseType: "blob", //Force to receive data in a Blob Format
@@ -56,15 +63,19 @@ const Index = () => {
         link.setAttribute("download", "pdfextractor.pdf");
         document.body.appendChild(link);
         link.click();
+        setLoad(false)
       })
       .catch((error) => {
         message.error(
           !error.response ? error.message : error.response.data.message
         );
+        setLoad(false)
       });
   };
 
   const downloadCategory = () => {
+    setLoad(true)
+
     axios(`http://localhost:3002/rest/api/v1/pdf/category`, {
       method: "POST",
       responseType: "blob", //Force to receive data in a Blob Format
@@ -86,11 +97,15 @@ const Index = () => {
         link.setAttribute("download", "pdfextractor.pdf");
         document.body.appendChild(link);
         link.click();
+        setLoad(false)
+
       })
       .catch((error) => {
         message.error(
           !error.response ? error.message : error.response.data.message
         );
+        setLoad(false)
+
       });
   };
 
@@ -108,12 +123,11 @@ const Index = () => {
   };
 
   const downloadSorted = () => {
-
     let sortedArray = [...selected2];
 
-    for(let i = 0 ; i < pages ; i++){
+    for (let i = 0; i < pages; i++) {
 
-      if( !sortedArray.includes(i) )
+      if (!sortedArray.includes(i))
         sortedArray.push(i);
     }
 
@@ -124,6 +138,8 @@ const Index = () => {
   }
 
   const removeSelected = (id) => {
+
+    console.log("SELECT-1")
     let tempImage = [...image];
     tempImage.splice(id, 1);
 
@@ -136,6 +152,8 @@ const Index = () => {
   };
 
   const removeSelected2 = (id) => {
+    console.log("SELECT--2")
+
     let tempImage = [...image2];
     tempImage.splice(id, 1);
 
@@ -229,8 +247,9 @@ const Index = () => {
                   <img
                     alt={`Page ${selected2[i]}`}
                     src={ele}
-                    width="100px"
-                    height="170px"
+                    // width="100px"
+                    // height="170px"
+                    className="img"
                   />
                 </Card>
               </Tooltip>
@@ -260,8 +279,9 @@ const Index = () => {
                   <img
                     alt={`Page ${selected[i]}`}
                     src={ele}
-                    width="100px"
-                    height="170px"
+                    // width="100px"
+                    // height="170px"
+                    className="img"
                   />
                 </Card>
               </Tooltip>
@@ -313,6 +333,7 @@ const Index = () => {
                 style={{ position: "absolute" }}
                 onClick={downloadSorted}
                 disabled={image2.length === 0}
+                loading={load}
               >
                 Download
               </Button>
@@ -337,6 +358,7 @@ const Index = () => {
                 style={{ position: "absolute" }}
                 onClick={downloadSelected}
                 disabled={image.length === 0}
+                loading={load}
               >
                 Download
               </Button>
@@ -364,6 +386,7 @@ const Index = () => {
                     icon={<DownloadOutlined />}
                     size="large"
                     htmlType="submit"
+                    loading={load}
                   >
                     Download
                   </Button>
@@ -378,6 +401,7 @@ const Index = () => {
                 size="large"
                 onClick={downloadCategory}
                 disabled={category.length === 0}
+                loading={load}
               >
                 Download
               </Button>

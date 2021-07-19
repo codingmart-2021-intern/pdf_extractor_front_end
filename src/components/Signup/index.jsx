@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { platformApi } from '../../helpers/api';
 import { Form, Input, Button, Checkbox, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -9,21 +9,28 @@ const Index = () => {
 
     const form = Form.useForm();
     const history = useHistory();
+    const [loading, setLoading] = useState(false)
 
     const onSubmit = (values) => {
+        setLoading(true)
+
         console.log('Received values of form: ', values);
         platformApi.post("/user/signup", values)
             .then(result => {
                 console.log(result)
-                message.success("signup successfull",2)
+                message.success("signup successfull", 2)
                 history.push("/login")
+                setLoading(false)
+
             })
             .catch(error => {
                 message.error(
-                  !error.response
-                    ? error.message
-                    : error.response.data.message
-                ,2);
+                    !error.response
+                        ? error.message
+                        : error.response.data.message
+                    , 2);
+                setLoading(false)
+
             })
     };
 
@@ -76,7 +83,7 @@ const Index = () => {
                     </Form.Item> */}
 
                     <Form.Item style={{ marginTop: "-1rem" }}>
-                        <Button type="primary" block htmlType="submit" >
+                        <Button type="primary" block htmlType="submit" loading={loading}>
                             Sign up
                         </Button>
                         <Link

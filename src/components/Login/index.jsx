@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { platformApi } from "../../helpers/api";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
@@ -9,10 +9,11 @@ import { setAccessToken, setUserId } from "../../utils";
 const Index = () => {
   const form = Form.useForm();
   const history = useHistory();
+  const [loading, setLoading] = useState(false)
 
   const onSubmit = (values) => {
     console.log("Received values of form: ", values);
-
+    setLoading(true)
     platformApi
       .post("/user/authenticate", values)
       .then((result) => {
@@ -22,13 +23,16 @@ const Index = () => {
         setUserId(data.id);
         history.push("/");
         message.success("Login success", 2);
+        setLoading(false)
       })
       .catch((error) => {
+        setLoading(false)
+
         message.error(
           !error.response
             ? error.message
             : error.response.data.message
-            ,2
+          , 2
         );
       });
   };
@@ -64,14 +68,14 @@ const Index = () => {
             />
           </Form.Item>
 
-          <Form.Item>
+          {/* <Form.Item>
             <a className={classes.login_forgot} href="#/">
               Forgot password
             </a>
-          </Form.Item>
+          </Form.Item> */}
 
-          <Form.Item style={{ marginTop: "-2rem" }}>
-            <Button type="primary" block htmlType="submit">
+          <Form.Item style={{ marginTop: "0rem" }}>
+            <Button type="primary" block htmlType="submit" loading={loading}>
               Log in
             </Button>
             <Link

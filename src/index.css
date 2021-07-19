@@ -30,3 +30,8 @@
 .ant-table-row:nth-child(2n){
   background-color: #a8afb3;
 }
+
+
+.img{
+  /* object-fit: contain; */
+}
