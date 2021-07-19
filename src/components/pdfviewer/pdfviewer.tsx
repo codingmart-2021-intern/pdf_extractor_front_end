@@ -16,14 +16,11 @@ const Pdfviewer = (sets: any) => {
 
   const [enable,setEnable] = useState(false);
   const pageChange = (props: PageChangeEvent) => {
-    console.log("pageChange ",props.currentPage);
     setPage(props.currentPage);
   }
 
   const onThumnailClick = (props: any) => {
     if( String(props.target+"").includes("HTMLImageElement") ){
-      console.log("onThumnailClick ",props.currentPage);
-      console.log("Click, ",props);
       setEnable(true);
       sets.setSelected([...sets.selected,page]);
       sets.setImage([...sets.image,props.target.currentSrc]);
@@ -31,16 +28,9 @@ const Pdfviewer = (sets: any) => {
   }
 
   useEffect(() => {
-
-    console.log(
-      "USEEFFECT",
-      page,
-      sets.selected[sets.selected.length - 1],
-      page !== sets.selected[sets.selected.length - 1]
-      ,enable)
-    
+    console.log(sets)
     if( enable === true && page !== sets.selected[sets.selected.length - 1] ){
-      let tempSelected = sets.selected;
+      let tempSelected = [...sets.selected];
       tempSelected[tempSelected.length - 1] = page;
       sets.setSelected([...tempSelected]);
       setEnable(false);
@@ -118,10 +108,10 @@ const Pdfviewer = (sets: any) => {
     <>
       <Worker 
         workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js">
-          <div style={{width: "700px", padding: "10px 50px"}} onClick={onThumnailClick}>
+          <div style={{width: "700px", padding: "10px 50px", margin: "0"}} onClick={onThumnailClick}>
             <Viewer
               
-              fileUrl="https://file-examples-com.github.io/uploads/2017/10/file-example_PDF_1MB.pdf"
+              fileUrl={sets.url}
               plugins={[defaultLayoutPluginInstance]}
               onPageChange={pageChange}
               
