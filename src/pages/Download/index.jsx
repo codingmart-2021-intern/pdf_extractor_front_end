@@ -186,7 +186,6 @@ const Index = () => {
           if (!removeDuplicate.includes(cat)) removeDuplicate.push(cat);
         });
         setDropdown(removeDuplicate);
-        setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -294,7 +293,7 @@ const Index = () => {
           justifyContent: "space-between",
         }}
       >
-        <PDFviewer
+        { url && <PDFviewer
           selected={selected}
           setSelected={setSelected}
           image={image}
@@ -304,7 +303,7 @@ const Index = () => {
           image2={image2}
           setImage2={setImage2}
           url={url}
-        />
+        />}
         <Affix
           offsetTop={170}
           style={{ width: "50%", padding: "50px", marginRight: "40px" }}
