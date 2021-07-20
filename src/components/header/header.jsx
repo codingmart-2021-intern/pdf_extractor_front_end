@@ -4,10 +4,20 @@ import { useHistory } from "react-router-dom";
 import {
   ArrowLeftOutlined,
   FilePdfOutlined,
+  LogoutOutlined
 } from "@ant-design/icons";
+import { removeStorage } from "../../utils";
+
+
 
 const Header = ({ page }) => {
   const history = useHistory();
+
+  const onLogoutFunc=()=>{
+    removeStorage();
+    history.push("/login");
+  }
+
   return (
     <div className={classes.nav}>
       {page === "Home" ? (
@@ -21,6 +31,10 @@ const Header = ({ page }) => {
           Go Back
         </div>
       )}
+
+      <div className={classes.logout} onClick={onLogoutFunc}>
+      <LogoutOutlined style={{marginRight:"10px"}} />  Logout
+      </div>
     </div>
   );
 };

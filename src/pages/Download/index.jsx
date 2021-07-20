@@ -12,6 +12,7 @@ import {
   Button,
   Card,
   message,
+  Spin,
 } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import PDFviewer from "../../components/pdfviewer/pdfviewer";
@@ -35,19 +36,26 @@ const Index = () => {
   const [url, setUrl] = useState();
   const [pages, setPages] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [load, setLoad] = useState(false);
+  const [load2, setLoad2] = useState(false);
+  const [load3, setLoad3] = useState(false);
+  const [load4, setLoad4] = useState(false);
 
   const createPDF = (data) => {
-    console.log(data);
-    axios(`http://localhost:3002/rest/api/v1/pdf/download`, {
-      method: "POST",
-      responseType: "blob", //Force to receive data in a Blob Format
-      headers: {
-        Authorization: getAccessToken(),
-      },
-      data,
-    })
+    setLoad(true);
+
+    axios(
+      `https://pdf-extractor-backend.herokuapp.com/rest/api/v1/pdf/download`,
+      {
+        method: "POST",
+        responseType: "blob", //Force to receive data in a Blob Format
+        headers: {
+          Authorization: getAccessToken(),
+        },
+        data,
+      }
+    )
       .then((response) => {
-        console.log(response);
         const url = window.URL.createObjectURL(
           new Blob([response.data], { type: "application/pdf" })
         );
@@ -56,28 +64,34 @@ const Index = () => {
         link.setAttribute("download", "pdfextractor.pdf");
         document.body.appendChild(link);
         link.click();
+        setLoad(false);
       })
       .catch((error) => {
         message.error(
           !error.response ? error.message : error.response.data.message
         );
+        setLoad(false);
       });
   };
 
   const downloadCategory = () => {
-    axios(`http://localhost:3002/rest/api/v1/pdf/category`, {
-      method: "POST",
-      responseType: "blob", //Force to receive data in a Blob Format
-      headers: {
-        Authorization: getAccessToken(),
-      },
-      data: {
-        pdfId: pdfid,
-        categories: category,
-      },
-    })
+    setLoad(true);
+
+    axios(
+      `https://pdf-extractor-backend.herokuapp.com/rest/api/v1/pdf/category`,
+      {
+        method: "POST",
+        responseType: "blob", //Force to receive data in a Blob Format
+        headers: {
+          Authorization: getAccessToken(),
+        },
+        data: {
+          pdfId: pdfid,
+          categories: category,
+        },
+      }
+    )
       .then((response) => {
-        console.log(response);
         const url = window.URL.createObjectURL(
           new Blob([response.data], { type: "application/pdf" })
         );
@@ -86,16 +100,17 @@ const Index = () => {
         link.setAttribute("download", "pdfextractor.pdf");
         document.body.appendChild(link);
         link.click();
+        setLoad(false);
       })
       .catch((error) => {
         message.error(
           !error.response ? error.message : error.response.data.message
         );
+        setLoad(false);
       });
   };
 
   function handleChange(value) {
-    console.log(value);
     setCategory(String(value).split(","));
   }
 
@@ -108,20 +123,17 @@ const Index = () => {
   };
 
   const downloadSorted = () => {
-
     let sortedArray = [...selected2];
 
-    for(let i = 0 ; i < pages ; i++){
-
-      if( !sortedArray.includes(i) )
-        sortedArray.push(i);
+    for (let i = 0; i < pages; i++) {
+      if (!sortedArray.includes(i)) sortedArray.push(i);
     }
 
     createPDF({
       pdfId: pdfid,
-      pageNos: sortedArray
-    })
-  }
+      pageNos: sortedArray,
+    });
+  };
 
   const removeSelected = (id) => {
     let tempImage = [...image];
@@ -148,14 +160,11 @@ const Index = () => {
   };
 
   const onSubmit = (values) => {
-    console.log("Received values of form: ", values);
     if (values.slider) {
       let selectedPages = [];
       for (let i = values.slider[0]; i <= values.slider[1]; i++) {
         selectedPages.push(i - 1);
       }
-
-      console.log(selectedPages);
 
       if (selectedPages.length > 0)
         createPDF({
@@ -167,10 +176,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    console.log("Dropdown is ", dropdown);
-  }, [dropdown]);
-
-  useEffect(() => {
+    setIsLoading(true);
     platformApi
       .get(`/pdf/categorieslist/${pdfid}`)
       .then((response) => {
@@ -180,6 +186,7 @@ const Index = () => {
           if (!removeDuplicate.includes(cat)) removeDuplicate.push(cat);
         });
         setDropdown(removeDuplicate);
+        setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -195,11 +202,6 @@ const Index = () => {
         setUrl(response.data.url);
         setPages(response.data.pages.length);
         setIsLoading(false);
-
-        platformApi
-          .get(response.data.url)
-          .then((response) => console.log(response))
-          .catch((error) => console.log(error));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -229,8 +231,9 @@ const Index = () => {
                   <img
                     alt={`Page ${selected2[i]}`}
                     src={ele}
-                    width="100px"
-                    height="170px"
+                    // width="100px"
+                    // height="170px"
+                    className="img"
                   />
                 </Card>
               </Tooltip>
@@ -260,8 +263,9 @@ const Index = () => {
                   <img
                     alt={`Page ${selected[i]}`}
                     src={ele}
-                    width="100px"
-                    height="170px"
+                    // width="100px"
+                    // height="170px"
+                    className="img"
                   />
                 </Card>
               </Tooltip>
@@ -272,7 +276,15 @@ const Index = () => {
     );
   }, [selected, image]);
   return isLoading ? (
-    <h1>Loading...</h1>
+    <Spin
+      size="large"
+      style={{
+        display: "flex",
+        height: "100vh",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    />
   ) : (
     <>
       <Header page="Download" />
@@ -305,6 +317,13 @@ const Index = () => {
               }}
               key="1"
             >
+              {image2.length === 0 && (
+                <div>
+                  <span style={{ color: "red" }}>
+                    Select thumbnail in the tool bar
+                  </span>
+                </div>
+              )}
               <Button
                 type="primary"
                 shape="round"
@@ -313,6 +332,7 @@ const Index = () => {
                 style={{ position: "absolute" }}
                 onClick={downloadSorted}
                 disabled={image2.length === 0}
+                loading={load}
               >
                 Download
               </Button>
@@ -329,6 +349,13 @@ const Index = () => {
               tab="Select PDF"
               key="2"
             >
+              {image.length === 0 && (
+                <div>
+                  <span style={{ color: "red" }}>
+                    Select thumbnail in the tool bar
+                  </span>
+                </div>
+              )}
               <Button
                 type="primary"
                 shape="round"
@@ -337,6 +364,7 @@ const Index = () => {
                 style={{ position: "absolute" }}
                 onClick={downloadSelected}
                 disabled={image.length === 0}
+                loading={load}
               >
                 Download
               </Button>
@@ -364,6 +392,7 @@ const Index = () => {
                     icon={<DownloadOutlined />}
                     size="large"
                     htmlType="submit"
+                    loading={load}
                   >
                     Download
                   </Button>
@@ -378,6 +407,7 @@ const Index = () => {
                 size="large"
                 onClick={downloadCategory}
                 disabled={category.length === 0}
+                loading={load}
               >
                 Download
               </Button>
