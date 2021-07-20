@@ -12,13 +12,11 @@ const Index = () => {
   const [loading, setLoading] = useState(false)
 
   const onSubmit = (values) => {
-    console.log("Received values of form: ", values);
     setLoading(true)
     platformApi
       .post("/user/authenticate", values)
       .then((result) => {
         let { data } = result;
-        console.log(data);
         setAccessToken(data.token);
         setUserId(data.id);
         history.push("/");

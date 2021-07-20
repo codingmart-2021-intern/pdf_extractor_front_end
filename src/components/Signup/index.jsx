@@ -13,11 +13,8 @@ const Index = () => {
 
     const onSubmit = (values) => {
         setLoading(true)
-
-        console.log('Received values of form: ', values);
         platformApi.post("/user/signup", values)
             .then(result => {
-                console.log(result)
                 message.success("signup successfull", 2)
                 history.push("/login")
                 setLoading(false)

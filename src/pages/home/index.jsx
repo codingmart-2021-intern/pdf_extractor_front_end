@@ -16,10 +16,8 @@ const Home = () => {
   const [data, setData] = useState([]);
   const history = useHistory();
   const [count, setCount] = useState(0);
-  console.log(uploaded);
 
   const upload = () => {
-    console.log("FILENAME  " + filename);
     setSpinning(true);
     const userId = getUserId();
     platformApi
@@ -44,7 +42,6 @@ const Home = () => {
   }, []);
 
   const handleDeletePdf = (id) => {
-    console.log(id);
     platformApi
       .delete(`/pdf/deletePdf/${id}`)
       .then((res) => {
