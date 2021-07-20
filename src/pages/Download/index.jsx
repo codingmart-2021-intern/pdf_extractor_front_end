@@ -12,6 +12,7 @@ import {
   Button,
   Card,
   message,
+  Spin,
 } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import PDFviewer from "../../components/pdfviewer/pdfviewer";
@@ -35,26 +36,26 @@ const Index = () => {
   const [url, setUrl] = useState();
   const [pages, setPages] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [load, setLoad] = useState(false)
-  const [load2, setLoad2] = useState(false)
-  const [load3, setLoad3] = useState(false)
-  const [load4, setLoad4] = useState(false)
-
+  const [load, setLoad] = useState(false);
+  const [load2, setLoad2] = useState(false);
+  const [load3, setLoad3] = useState(false);
+  const [load4, setLoad4] = useState(false);
 
   const createPDF = (data) => {
-    console.log(data);
-    setLoad(true)
+    setLoad(true);
 
-    axios(`http://localhost:3002/rest/api/v1/pdf/download`, {
-      method: "POST",
-      responseType: "blob", //Force to receive data in a Blob Format
-      headers: {
-        Authorization: getAccessToken(),
-      },
-      data,
-    })
+    axios(
+      `https://pdf-extractor-backend.herokuapp.com/rest/api/v1/pdf/download`,
+      {
+        method: "POST",
+        responseType: "blob", //Force to receive data in a Blob Format
+        headers: {
+          Authorization: getAccessToken(),
+        },
+        data,
+      }
+    )
       .then((response) => {
-        console.log(response);
         const url = window.URL.createObjectURL(
           new Blob([response.data], { type: "application/pdf" })
         );
@@ -63,32 +64,34 @@ const Index = () => {
         link.setAttribute("download", "pdfextractor.pdf");
         document.body.appendChild(link);
         link.click();
-        setLoad(false)
+        setLoad(false);
       })
       .catch((error) => {
         message.error(
           !error.response ? error.message : error.response.data.message
         );
-        setLoad(false)
+        setLoad(false);
       });
   };
 
   const downloadCategory = () => {
-    setLoad(true)
+    setLoad(true);
 
-    axios(`http://localhost:3002/rest/api/v1/pdf/category`, {
-      method: "POST",
-      responseType: "blob", //Force to receive data in a Blob Format
-      headers: {
-        Authorization: getAccessToken(),
-      },
-      data: {
-        pdfId: pdfid,
-        categories: category,
-      },
-    })
+    axios(
+      `https://pdf-extractor-backend.herokuapp.com/rest/api/v1/pdf/category`,
+      {
+        method: "POST",
+        responseType: "blob", //Force to receive data in a Blob Format
+        headers: {
+          Authorization: getAccessToken(),
+        },
+        data: {
+          pdfId: pdfid,
+          categories: category,
+        },
+      }
+    )
       .then((response) => {
-        console.log(response);
         const url = window.URL.createObjectURL(
           new Blob([response.data], { type: "application/pdf" })
         );
@@ -97,20 +100,17 @@ const Index = () => {
         link.setAttribute("download", "pdfextractor.pdf");
         document.body.appendChild(link);
         link.click();
-        setLoad(false)
-
+        setLoad(false);
       })
       .catch((error) => {
         message.error(
           !error.response ? error.message : error.response.data.message
         );
-        setLoad(false)
-
+        setLoad(false);
       });
   };
 
   function handleChange(value) {
-    console.log(value);
     setCategory(String(value).split(","));
   }
 
@@ -126,20 +126,16 @@ const Index = () => {
     let sortedArray = [...selected2];
 
     for (let i = 0; i < pages; i++) {
-
-      if (!sortedArray.includes(i))
-        sortedArray.push(i);
+      if (!sortedArray.includes(i)) sortedArray.push(i);
     }
 
     createPDF({
       pdfId: pdfid,
-      pageNos: sortedArray
-    })
-  }
+      pageNos: sortedArray,
+    });
+  };
 
   const removeSelected = (id) => {
-
-    console.log("SELECT-1")
     let tempImage = [...image];
     tempImage.splice(id, 1);
 
@@ -152,8 +148,6 @@ const Index = () => {
   };
 
   const removeSelected2 = (id) => {
-    console.log("SELECT--2")
-
     let tempImage = [...image2];
     tempImage.splice(id, 1);
 
@@ -166,14 +160,11 @@ const Index = () => {
   };
 
   const onSubmit = (values) => {
-    console.log("Received values of form: ", values);
     if (values.slider) {
       let selectedPages = [];
       for (let i = values.slider[0]; i <= values.slider[1]; i++) {
         selectedPages.push(i - 1);
       }
-
-      console.log(selectedPages);
 
       if (selectedPages.length > 0)
         createPDF({
@@ -185,10 +176,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    console.log("Dropdown is ", dropdown);
-  }, [dropdown]);
-
-  useEffect(() => {
+    setIsLoading(true);
     platformApi
       .get(`/pdf/categorieslist/${pdfid}`)
       .then((response) => {
@@ -198,6 +186,7 @@ const Index = () => {
           if (!removeDuplicate.includes(cat)) removeDuplicate.push(cat);
         });
         setDropdown(removeDuplicate);
+        setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -213,11 +202,6 @@ const Index = () => {
         setUrl(response.data.url);
         setPages(response.data.pages.length);
         setIsLoading(false);
-
-        platformApi
-          .get(response.data.url)
-          .then((response) => console.log(response))
-          .catch((error) => console.log(error));
       })
       .catch((error) => {
         setIsLoading(false);
@@ -292,7 +276,15 @@ const Index = () => {
     );
   }, [selected, image]);
   return isLoading ? (
-    <h1>Loading...</h1>
+    <Spin
+      size="large"
+      style={{
+        display: "flex",
+        height: "100vh",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    />
   ) : (
     <>
       <Header page="Download" />
@@ -325,6 +317,13 @@ const Index = () => {
               }}
               key="1"
             >
+              {image2.length === 0 && (
+                <div>
+                  <span style={{ color: "red" }}>
+                    Select thumbnail in the tool bar
+                  </span>
+                </div>
+              )}
               <Button
                 type="primary"
                 shape="round"
@@ -350,6 +349,13 @@ const Index = () => {
               tab="Select PDF"
               key="2"
             >
+              {image.length === 0 && (
+                <div>
+                  <span style={{ color: "red" }}>
+                    Select thumbnail in the tool bar
+                  </span>
+                </div>
+              )}
               <Button
                 type="primary"
                 shape="round"
